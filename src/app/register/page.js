@@ -1,5 +1,6 @@
 'use client'
 
+import Config from "@/Config";
 import { Formik } from "formik";
 import Link from "next/link";
 import * as Yup from 'yup';

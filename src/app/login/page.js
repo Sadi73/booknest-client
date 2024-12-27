@@ -1,9 +1,12 @@
 'use client'
 
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import Link from 'next/link';
+import Config from '@/Config';
+import { useRouter } from 'next/navigation';
+import { authContext } from '@/Providers/AuthProvider';
 
 const validationSchema = Yup.object({
     email: Yup.string().required('Email is required'),
@@ -12,6 +15,11 @@ const validationSchema = Yup.object({
 
 const page = () => {
 
+    const router = useRouter();
+    const {setIsAuthenticated} = useContext(authContext);
+
+    const [loginErrorMessage, setLoginErrorMessage] = useState(null)
+
     return (
         <div className='mt-10'>
             <div className='flex flex-col-reverse md:flex-row border md:w-[80%] mx-auto min-h-[550px] rounded-lg gap-10 md:gap-0 pb-5 md:pb-0'>
@@ -19,7 +27,7 @@ const page = () => {
                     <div className='space-y-5'>
                         <h1 className='text-center text-3xl text-teal-500 font-semibold'>Sign In to Bongo Explorers</h1>
 
-                        {/* {loginError && <p className='text-red-500'>Wrong Email or Password</p>} */}
+                        {loginErrorMessage && <p className='text-red-500'>{loginErrorMessage}</p>}
 
                         <div className='px-5 md:px-0'>
                             <Formik
@@ -27,6 +35,29 @@ const page = () => {
                                 validationSchema={validationSchema}
                                 onSubmit={(values, { setSubmitting }) => {
                                     console.log(values)
+                                    fetch(`${Config.baseApi}/login`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify(values)
+                                    })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data?.success) {
+                                                const userInfo = {
+                                                    userName: data?.user?.name,
+                                                    email: data?.user?.email,
+                                                    token: data?.token,
+                                                    role: data?.user?.role
+                                                }
+                                                localStorage.setItem('authInfo', JSON.stringify(userInfo));
+                                                setIsAuthenticated(true);
+                                                router.push('/');
+                                            } else {
+                                                setLoginErrorMessage(data?.message)
+                                            }
+                                        })
                                 }}
                             >
                                 {({
