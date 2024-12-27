@@ -1,11 +1,11 @@
 import Banner from "@/components/Banner";
-import Navbar from "@/components/Navbar";
+import BookContainer from "@/components/BookContainer";
 
 export default function Home() {
   return (
     <div className="">
-      <Navbar />
       <Banner />
+      <BookContainer />
     </div>
   );
 }
