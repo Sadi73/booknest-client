@@ -10,10 +10,10 @@ const BookContainer = async () => {
     const allBooks = data?.success ? data.data : [];
 
     return (
-        <div className='my-20'>
+        <div className='mt-10 my-20'>
             <h1 className='text-5xl text-center mb-10'>Books</h1>
 
-            <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-5'>
+            <div className='grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5'>
                 {allBooks.length > 0 &&
                     allBooks.map(book =>
                         <BookCard

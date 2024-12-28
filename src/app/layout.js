@@ -10,7 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body cz-shortcut-listen="true">
+      <body cz-shortcut-listen="true" className="md:w-3/4 mx-auto">
         <AuthProvider>
           <Navbar />
           {children}

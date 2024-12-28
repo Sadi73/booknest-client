@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 const Banner = () => {
     return (
-        <div className=' flex items-center justify-center md:px-20 py-10'>
+        <div className=' flex items-center justify-center px-10 md:px-20 py-10'>
             <div>
                 <h1 className='text-3xl font-bold md:text-5xl'>Books to Freshen up  Your Bookshelf</h1>
                 <Link href='/listed-books'> <button className='bg-[#23BE0A] text-white font-semibold p-3 mt-5 rounded-md'>View The List</button></Link>

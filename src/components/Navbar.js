@@ -7,9 +7,7 @@ import React, { useContext } from 'react';
 const menuItems = <>
     <li><Link href='/'>Home</Link></li>
     <li><Link href='/listed-books'>Listed Books</Link></li>
-    <li><Link href='/pages-href-read'>Pages href Read</Link></li>
-    <li><Link href='/upcoming-books'>Upcoming Books</Link></li>
-    <li><Link href='/contact'>Contact Us</Link></li>
+    <li><button >Add Book</button></li>
 </>
 
 const Navbar = () => {
