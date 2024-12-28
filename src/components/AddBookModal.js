@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import Config from '@/Config';
@@ -9,7 +9,6 @@ import Config from '@/Config';
 const validationSchema = Yup.object({
     bookName: Yup.string().required("Book Name is required"),
     author: Yup.string().required("Author is required"),
-    image: Yup.string().url("Invalid URL").required("Image URL is required"),
     review: Yup.string().required("Review is required"),
     totalPages: Yup.number()
         .positive("Total pages must be positive")
@@ -33,7 +32,6 @@ const validationSchema = Yup.object({
 const initialValues = {
     bookName: "",
     author: "",
-    image: "",
     review: "",
     totalPages: "",
     rating: "",
@@ -45,21 +43,58 @@ const initialValues = {
 };
 
 const AddBookModal = () => {
+
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [imageError, setImageError] = useState('');
+
+    const handleImageInputChange = (e) => {
+        const file = e.target.files[0];
+        setSelectedFile(file);
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setSelectedImage(imageUrl);
+            setImageError("");
+        } else {
+            setSelectedImage(null);
+        }
+    };
+
     const handleSubmit = (values) => {
-        fetch(`${Config.baseApi}/add-book`, {
+
+        if (!selectedFile) {
+            setImageError("Please select an image.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', selectedFile);
+
+        fetch(`https://api.imgbb.com/1/upload?key=156b98e99bfec8bebe351e986187f3a0`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(values)
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                if (data?.success) {
-                    window.my_modal_5.close();
+            body: formData
+        }).then(response => response.json())
+            .then(imgUrlData => {
+                if (imgUrlData?.success) {
+
+                    fetch(`${Config.baseApi}/add-book`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ ...values, image: imgUrlData?.data?.url })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data?.success) {
+                                window.my_modal_5.close();
+                            } else {
+                                console.log(data)
+                            }
+                        })
                 }
             })
+
     };
 
     return (
@@ -74,43 +109,38 @@ const AddBookModal = () => {
                     <Form className='space-y-3'>
                         <div className='flex flex-col'>
                             <label htmlFor="bookName">Book Name:</label>
-                            <Field className="border" type="text" id="bookName" name="bookName" />
+                            <Field className="border p-2" type="text" id="bookName" name="bookName" />
                             {touched.bookName && errors.bookName && <div className="error text-red-700">{errors.bookName}</div>}
                         </div>
 
                         <div className='flex flex-col'>
                             <label htmlFor="author">Author:</label>
-                            <Field className="border" type="text" id="author" name="author" />
+                            <Field className="border p-2" type="text" id="author" name="author" />
                             {touched.author && errors.author && <div className="error text-red-700">{errors.author}</div>}
                         </div>
 
-                        <div className='flex flex-col'>
-                            <label htmlFor="image">Image URL:</label>
-                            <Field className="border" type="text" id="image" name="image" />
-                            {touched.image && errors.image && <div className="error text-red-700">{errors.image}</div>}
-                        </div>
 
                         <div className='flex flex-col'>
                             <label htmlFor="review">Review:</label>
-                            <Field className="border" as="textarea" id="review" name="review" />
+                            <Field className="border p-2" as="textarea" id="review" name="review" />
                             {touched.review && errors.review && <div className="error text-red-700">{errors.review}</div>}
                         </div>
 
                         <div className='flex flex-col'>
                             <label htmlFor="totalPages">Total Pages:</label>
-                            <Field className="border" type="number" id="totalPages" name="totalPages" />
+                            <Field className="border p-2" type="number" id="totalPages" name="totalPages" />
                             {touched.totalPages && errors.totalPages && <div className="error text-red-700">{errors.totalPages}</div>}
                         </div>
 
                         <div className='flex flex-col'>
                             <label htmlFor="rating">Rating:</label>
-                            <Field className="border" type="number" step="0.1" id="rating" name="rating" />
+                            <Field className="border p-2" type="number" step="0.1" id="rating" name="rating" />
                             {touched.rating && errors.rating && <div className="error text-red-700">{errors.rating}</div>}
                         </div>
 
                         <div className='flex flex-col'>
                             <label htmlFor="category">Category:</label>
-                            <Field className="border" as="select" id="category" name="category">
+                            <Field className="border p-2" as="select" id="category" name="category">
                                 <option value="" disabled>
                                     Select Category
                                 </option>
@@ -125,7 +155,7 @@ const AddBookModal = () => {
 
                         <div className='flex flex-col'>
                             <label htmlFor="tags">Tags:</label>
-                            <Field className="border"
+                            <Field className="border p-2"
                                 type="text"
                                 id="tags"
                                 name="tags"
@@ -136,20 +166,28 @@ const AddBookModal = () => {
 
                         <div className='flex flex-col'>
                             <label htmlFor="publisher">Publisher:</label>
-                            <Field className="border" type="text" id="publisher" name="publisher" />
+                            <Field className="border p-2" type="text" id="publisher" name="publisher" />
                             {touched.publisher && errors.publisher && <div className="error text-red-700">{errors.publisher}</div>}
                         </div>
 
                         <div className='flex flex-col'>
                             <label htmlFor="yearOfPublishing">Year of Publishing:</label>
-                            <Field className="border" type="number" id="yearOfPublishing" name="yearOfPublishing" />
+                            <Field className="border p-2" type="number" id="yearOfPublishing" name="yearOfPublishing" />
                             {touched.yearOfPublishing && errors.yearOfPublishing && <div className="error text-red-700">{errors.yearOfPublishing}</div>}
                         </div>
 
                         <div className='flex flex-col'>
                             <label htmlFor="price">Price:</label>
-                            <Field className="border" type="number" step="0.01" id="price" name="price" />
+                            <Field className="border p-2" type="number" step="0.01" id="price" name="price" />
                             {touched.price && errors.price && <div className="error text-red-700">{errors.price}</div>}
+                        </div>
+
+                        <div>
+                            <input type="file" accept="image/*" onChange={handleImageInputChange} />
+                            {selectedImage && (
+                                <img src={selectedImage} alt="Selected" className='w-64' />
+                            )}
+                            {imageError && <p className='text-red-700'>Please give an image</p>}
                         </div>
 
                         <div className='flex justify-end items-center gap-5'>

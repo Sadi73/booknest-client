@@ -7,7 +7,7 @@ import AddBookModal from './AddBookModal';
 
 const menuItems = <>
     <li><Link href='/'>Home</Link></li>
-    <li><Link href='/listed-books'>Listed Books</Link></li>
+    {/* <li><Link href='/listed-books'>Listed Books</Link></li> */}
     <li><button onClick={() => document.getElementById('my_modal_5').showModal()}>Add Book</button></li>
 </>
 
@@ -45,7 +45,7 @@ const Navbar = () => {
                 </div>
 
                 <div className="navbar-end">
-                    <button className="btn btn-ghost btn-circle">
+                    {/* <button className="btn btn-ghost btn-circle">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-5 w-5"
@@ -76,7 +76,7 @@ const Navbar = () => {
                             </svg>
                             <span className="badge badge-xs badge-primary indicator-item"></span>
                         </div>
-                    </button>
+                    </button> */}
 
                     {isAuthenticated ?
                         <div className="dropdown dropdown-end">
@@ -89,14 +89,14 @@ const Navbar = () => {
                             </div>
                             <ul
                                 tabIndex={0}
-                                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                                <li>
+                                className="menu menu-sm dropdown-content bg-teal-500 text-white rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                                {/* <li>
                                     <a className="justify-between">
                                         Profile
                                         <span className="badge">New</span>
                                     </a>
                                 </li>
-                                <li><a>Settings</a></li>
+                                <li><a>Settings</a></li> */}
                                 <li><button onClick={handleLogout}>Logout</button></li>
                             </ul>
                         </div>

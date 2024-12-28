@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import "./globals.css";
 import AuthProvider from "@/Providers/AuthProvider";
+import SocketProvider from "@/Providers/SocketProvider";
 
 export const metadata = {
   title: "Create Next App",
@@ -12,8 +13,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body cz-shortcut-listen="true" className="md:w-3/4 mx-auto">
         <AuthProvider>
-          <Navbar />
-          {children}
+          <SocketProvider>
+            <Navbar />
+            {children}
+          </SocketProvider>
         </AuthProvider>
       </body>
     </html>

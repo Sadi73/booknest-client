@@ -1,13 +1,24 @@
-import React from 'react';
+'use client'
+
+import React, { useContext, useEffect, useState } from 'react';
 import BookCard from './BookCard';
 import Config from '@/Config';
+import { socketContext } from '@/Providers/SocketProvider';
 
-const BookContainer = async () => {
-    // Fetch data on the server
-    const response = await fetch(`${Config.baseApi}/books`, { cache: 'no-store' });
-    const data = await response.json();
+const BookContainer = () => {
+    const { newNotification } = useContext(socketContext);
 
-    const allBooks = data?.success ? data.data : [];
+    const [allBooks, setallBooks] = useState([]);
+
+    useEffect(() => {
+        fetch(`${Config.baseApi}/books`)
+            .then(response => response.json())
+            .then(data => {
+                if (data?.success) {
+                    setallBooks(data?.data)
+                }
+            })
+    }, [newNotification?.book?._id])
 
     return (
         <div className='mt-10 my-20'>
